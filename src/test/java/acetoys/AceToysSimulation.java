@@ -3,6 +3,8 @@ package acetoys;
 import java.time.Duration;
 import java.util.*;
 
+import acetoys.pageobjects.Category;
+import acetoys.pageobjects.StaticPages;
 import io.gatling.javaapi.core.*;
 import io.gatling.javaapi.http.*;
 import io.gatling.javaapi.jdbc.*;
@@ -24,37 +26,27 @@ public class AceToysSimulation extends Simulation {
 
     private ScenarioBuilder scn = scenario("AceToysSimulation")
             .exec(
-                    http("Load home page")
-                            .get("/")
-                            .check(status().shouldBe(200))
-                            .check(status().not(404), status().not(405), status().not(500))
-                            .check(css("title").shouldBe("Ace Toys Online Shop"))
-                            .check(css("#_csrf", "content").saveAs("csrfToken"))
+                    StaticPages.homePage
             )
             .pause(2)
             .exec(
-                    http("Load our story page")
-                            .get("/our-story")
+                    StaticPages.ourStoryPage
             )
             .pause(2)
             .exec(
-                    http("Load Get In Touch page")
-                            .get("/get-in-touch")
+                    StaticPages.getInTouchPage
             )
             .pause(2)
             .exec(
-                    http("Load the Products List Page - Category: All Products")
-                            .get("/category/all")
+                    Category.productListByCategoryAllProducts
             )
             .pause(2)
             .exec(
-                    http("Load Next Page Of Products - Page 1")
-                            .get("/category/all?page=1")
+                    Category.loadSecondPageOfProducts
             )
             .pause(2)
             .exec(
-                    http("Load Next Page Of Products - Page 2")
-                            .get("/category/all?page=2")
+                    Category.loadThirdPageOfProducts
             )
             .pause(2)
             .exec(
@@ -68,8 +60,7 @@ public class AceToysSimulation extends Simulation {
             )
             .pause(2)
             .exec(
-                    http("Load the Products List Page - Category: Babies Toys")
-                            .get("/category/babies-toys")
+                   Category.productListByCategoryBabiesToys
             )
             .pause(2)
             .exec(
@@ -96,10 +87,10 @@ public class AceToysSimulation extends Simulation {
                             .check(css("#_csrf", "content").saveAs("csrfTokenLogged"))
             )
             .exec(session -> {
-                System.out.println(session);
-                System.out.println(session.getString("csrfTokenLogged"));
-                return session;
-            }
+                        System.out.println(session);
+                        System.out.println(session.getString("csrfTokenLogged"));
+                        return session;
+                    }
             )
             .pause(2)
             .exec(
